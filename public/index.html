@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flashcards</title>
+    <title>Responive UI Bootloader Proof Of Concept</title>
   </head>
   
 <body>
@@ -12,6 +12,30 @@
   </div>
 
 <script>
+// Dynamically load style sheets. this is needed for for apps to load style sheets
+// in this "frame work"
+function LoadStyles(styles) 
+{
+     // Exit if styles is falsy, not an array, or an empty array
+    if (!Array.isArray(styles) || styles.length === 0) return;   
+
+    // delete all style sheets
+    document.querySelectorAll('link[rel="stylesheet"]').forEach(link => link.remove());
+
+    // add our style sheets
+    styles.forEach(href => 
+    {
+        const id = href.split('/').pop().replace(/\.[^/.]+$/, '').replace(/_/g, '-');
+        if (!document.getElementById(`style-${id}`)) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = href;
+        link.id = `style-${id}`;
+        document.head.appendChild(link);
+        }
+    });
+}
+
 function cleanupDynamicScripts() {
   document.querySelectorAll('script[data-dynamic="true"]').forEach(script => {
     // Optionally: call some global cleanup/unmount function here
