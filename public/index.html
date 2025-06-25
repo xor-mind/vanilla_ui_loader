@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responive UI Bootloader Proof Of Concept</title>
+    <title>Vanilla UI Loader</title>
   </head>
   
 <body>
@@ -11,100 +11,7 @@
     <p>Loading...</p>
   </div>
 
-<script>
-// Dynamically load style sheets. this is needed for our apps to load style sheets
-function LoadStyles(styles) 
-{
-     // Exit if styles is falsy, not an array, or an empty array
-    if (!Array.isArray(styles) || styles.length === 0) return;   
-
-    // delete all style sheets
-    document.querySelectorAll('link[rel="stylesheet"]').forEach(link => link.remove());
-
-    // add our style sheets
-    styles.forEach(href => 
-    {
-        const id = href.split('/').pop().replace(/\.[^/.]+$/, '').replace(/_/g, '-');
-        if (!document.getElementById(`style-${id}`)) {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = href;
-        link.id = `style-${id}`;
-        document.head.appendChild(link);
-        }
-    });
-}
-
-function cleanupDynamicScripts() {
-  document.querySelectorAll('script[data-dynamic="true"]').forEach(script => {
-    // Optionally: call some global cleanup/unmount function here
-    script.remove();
-  });
-}
-
-function injectHTMLAndRunScripts(container, html) {
-  // 1. Remove prior dynamic scripts
-  cleanupDynamicScripts();
-
-  // 2. Replace inner HTML
-  container.innerHTML = html;
-
-  // 3. Find and inject new external scripts
-  const temp = document.createElement('div');
-  temp.innerHTML = html;
-
-temp.querySelectorAll('script[src]').forEach(script => {
-  const newScript = document.createElement('script');
-  Array.from(script.attributes).forEach(attr => {
-    if (attr.name === 'src') {
-      let bustedSrc = attr.value + (attr.value.includes('?') ? '&' : '?') + 'v=' + Date.now();
-      newScript.setAttribute('src', bustedSrc);
-    } else {
-      newScript.setAttribute(attr.name, attr.value);
-    }
-  });
-  newScript.setAttribute('data-dynamic', 'true');
-  document.body.appendChild(newScript);
-});
-
-}
-
-
-function loadUI() {
-  const isMobile = window.innerWidth <= 600;
-  const target = isMobile ? '/mobile.html' : '/desktop.html';
-
-  fetch(target)
-    .then(response => response.text())
-    .then(html => {
-      const app = document.getElementById('app');
-      if (app) {
-        injectHTMLAndRunScripts(app, html);
-      } else {
-        console.error('Missing <div id="app"> element.');
-      }
-    })
-    .catch(err => {
-      const app = document.getElementById('app');
-      if (app) {
-        app.innerHTML = `<p>Error loading UI: ${err}</p>`;
-      }
-    });
-}
-
-window.addEventListener('DOMContentLoaded', loadUI);
-
-// this prevents unnecessary reloads. reloads only happen when we actually transition states.
-let lastIsMobile = window.innerWidth <= 600;
-
-window.addEventListener('resize', () => {
-  const isMobile = window.innerWidth <= 600;
-  if (isMobile !== lastIsMobile) {
-    lastIsMobile = isMobile;
-    loadUI();  // Re-load the UI if crossing mobile/desktop boundary
-  }
-});
-</script>
+<script type="module" src="js/vanilla-ui-loader.js"></script>
   
 </body>
 </html>

@@ -1,0 +1,6 @@
+Greater Priority:
+06/24/25 12:35pm - implement the new modularization refactorization of VUIL.
+
+Lesser Priority:
+06/24/25 12:35pm - comment regex functions in the VUIL.
+                 - add more comments in general explaining what i'm doing
