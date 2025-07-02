@@ -18,30 +18,6 @@
       return el;
    }
 
-	// Dynamically load style sheets. this is needed for our apps to load style sheets
-	function LoadStyles(styles) 
-	{
-		// Exit if styles is falsy, not an array, or an empty array
-		if (!Array.isArray(styles) || styles.length === 0) return;   
-
-		// delete all style sheets
-		document.querySelectorAll('link[rel="stylesheet"]').forEach(link => link.remove());
-
-		// add our style sheets
-		styles.forEach(href => 
-		{
-			const id = href.split('/').pop().replace(/\.[^/.]+$/, '').replace(/_/g, '-');
-			if (!document.getElementById(`style-${id}`)) {
-			const link = document.createElement('link');
-			link.rel = 'stylesheet';
-			link.href = href;
-			link.id = `style-${id}`;
-			document.head.appendChild(link);
-			}
-		});
-	}
-
-
 	// delete all dynamics scripts. this is done with each
 	// UI hotswap. this prevents copied script pollution
 	// and differnt UI scripts conflicting.
